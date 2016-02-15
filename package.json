@@ -1,0 +1,30 @@
+{
+  "name": "sensenet_server",
+  "version": "0.0.1",
+  "description": "SenseNet server for handling and storing readings",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbh-labs/sensenet_server.git"
+  },
+  "keywords": [
+    "iot",
+    "sensors",
+    "server"
+  ],
+  "author": "Jacky Boen",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/bbh-labs/sensenet_server/issues"
+  },
+  "homepage": "https://github.com/bbh-labs/sensenet_server#readme",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "pg": "^4.4.4",
+    "sequelize": "^3.19.2"
+  }
+}
