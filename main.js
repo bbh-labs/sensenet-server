@@ -7,6 +7,7 @@ const sequelize = new Sequelize(
 	'postgres', // Username
 	'Lion@123', // Password
 	{
+		host: 'bbh-labs.com.sg',
 		dialect: 'postgres',
 		logging: false,
 	}
