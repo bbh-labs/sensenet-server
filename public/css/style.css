@@ -1,0 +1,117 @@
+html, body, #root, .app {
+	margin: 0;
+	height: 100%;
+	color: white;
+	font-family: 'Open Sans', 'Helvetica', 'Arial', 'sans-serif';
+	overflow: hidden;
+}
+
+.app {
+	position: relative;
+}
+
+#map {
+	min-height: 100%;
+}
+
+.navbar {
+	background: #26243c;
+	width: 100%;
+}
+
+.hamburger-icon {
+	max-width: 32px;
+	max-height: 32px;
+	max-width: 2rem;
+	max-height: 2rem;
+	margin: 16px;
+	margin: 1rem;
+	cursor: pointer;
+}
+
+.sensenet-icon-container {
+	max-height: 32px;
+	max-height: 2rem;
+	margin: 16px;
+	margin: 1rem;
+}
+
+.sensenet-icon {
+	max-height: 32px;
+	max-height: 2rem;
+	object-fit: contain;
+}
+
+.search {
+	margin: 16px;
+	margin: 1rem;
+}
+
+.sidebar {
+	width: 40%;
+	min-height: 100%;
+	display: none;
+	position: absolute;
+	top: 0;
+	z-index: 9999;
+	background: #11111;
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.sidebar--active {
+	display: block;
+}
+
+.close-icon {
+	max-width: 32px;
+	max-width: 2rem;
+	max-height: 32px;
+	max-height: 2rem;
+	margin: 16px;
+	margin: 1rem;
+	cursor: pointer;
+}
+
+/* Stats */
+.line {
+	border: 1px solid white;
+	height: 1px;
+}
+
+.location-title {
+	margin: 0 16px;
+}
+
+.air-quality-container {
+	width: 33vmin;
+	height: 33vmin;
+	background: #33aedc;
+	border-radius: 50%;
+}
+
+.air-quality-status,
+.air-quality-score,
+.air-quality-label {
+	margin: 8px 0;
+}
+
+.sensor {
+	margin: 8px 0;
+}
+
+.sensor-bar {
+	height: 32px;
+	width: 50%;
+}
+
+.sensor-bar,
+.sensor-value,
+.sensor-label {
+	margin: 0 8px;
+}
+
+.very-high { background: #25243C; }
+.high { background: #F05361; }
+.medium { background: #FD6D4C; }
+.low { background: #3CD1AF; }
+.very-low { background: #33AEDC; }
