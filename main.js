@@ -24,13 +24,14 @@ const Reading = sequelize.define('reading', {
 	longitude:       Sequelize.FLOAT,
 });
 
-const NEAR_READING_RADIUS = 10;
+const READINGS_RADIUS = 100,
+      NEAR_READING_RADIUS = 10;
 
 const DISTANCE_CALC = '(acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(radians(r.latitude)) * cos(radians(?)) * cos(radians(r.longitude - ?))) * 6371 * 1000)';
 
 const GET_READINGS_QUERY = 'SELECT * FROM (SELECT ' + DISTANCE_CALC + ' computedDistance, * FROM readings r) AS tempQuery WHERE computedDistance < ? LIMIT 10';
 
-const DELETE_READINGS_QUERY = 'DELETE FROM readings WHERE (SELECT ' + DISTANCE_CALC + ' FROM readings) < ?';
+const DELETE_READINGS_QUERY = 'DELETE FROM readings r WHERE (SELECT ' + DISTANCE_CALC + ' FROM readings) < ?';
 
 sequelize.sync();
 
@@ -48,19 +49,14 @@ app.get('/readings', function(req, res) {
 		let longitude = parseFloat(req.query.longitude);
 		let radius = parseFloat(req.query.radius);
 		if (isNaN(radius)) {
-			radius = 100;
+			radius = READINGS_RADIUS;
 		}
 
 		if (!isNaN(latitude) && !isNaN(longitude)) {
 			sequelize.sync().then(function() {
-				sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, NEAR_READING_RADIUS ] })
-					.then(function() {
-						sequelize.query(GET_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, radius ] })
-							.then(function(readings) {
-								res.send(JSON.stringify(readings[0]));
-							}).catch(function(error) {
-								console.log('error:', error);
-							});
+				sequelize.query(GET_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, radius ] })
+					.then(function(readings) {
+						res.send(JSON.stringify(readings[0]));
 					}).catch(function(error) {
 						console.log('error:', error);
 					});
@@ -105,18 +101,23 @@ app.post('/reading', function(req, res) {
 	}
 
 	sequelize.sync().then(function() {
-		return Reading.create({
-			device_id:       req.body.deviceID,
-			temperature:     req.body.temperature,
-			humidity:        req.body.humidity,
-			uv:              req.body.uv,
-			particles:       req.body.particles,
-			carbon_monoxide: req.body.carbonMonoxide,
-			latitude:        req.body.latitude,
-			longitude:       req.body.longitude,
-		});
-	}).then(function() {
-		res.sendStatus(200);
+		sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, NEAR_READING_RADIUS ] })
+			.then(function() {
+				return Reading.create({
+					device_id:       deviceID,
+					temperature:     temperature,
+					humidity:        humidity,
+					uv:              uv,
+					particles:       particles,
+					carbon_monoxide: carbonMonoxide,
+					latitude:        latitude,
+					longitude:       longitude,
+				});
+			}).then(function() {
+				res.sendStatus(200);
+			}).catch(function(error) {
+				console.log('error:', error);
+			});
 	}).catch(function(error) {
 		console.error('error:', error);
 		res.sendStatus(500);
