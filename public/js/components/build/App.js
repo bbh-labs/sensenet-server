@@ -30,7 +30,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var RADIUS = 100,
+var RADIUS = 200,
     READING_RADIUS = 10;
 
 var dispatcher = new _flux2.default.Dispatcher();
@@ -245,7 +245,7 @@ var Stats = function (_React$Component4) {
 			if (reading) {
 				var temperaturePct = map(reading.temperature, 25, 34, 0, 100);
 				var humidityPct = map(reading.humidity, 50, 100, 0, 100);
-				var carbonMonoxidePct = map(reading.carbonMonoxide, 0, 1024, 0, 100);
+				var carbonMonoxidePct = map(reading.carbon_monoxide, 0, 1024, 0, 100);
 				var uvPct = map(reading.uv, 0, 15, 0, 100);
 				var particlesPct = map(reading.particles, 0, 2000, 0, 100);
 				var quality = ((temperaturePct + humidityPct + carbonMonoxidePct + uvPct + particlesPct) * 0.2).toFixed();
@@ -304,7 +304,7 @@ var Stats = function (_React$Component4) {
 						{ className: 'sensors flex column three justify-center' },
 						_react2.default.createElement(Sensor, { label: 'Temperature', percentage: temperaturePct, value: reading.temperature }),
 						_react2.default.createElement(Sensor, { label: 'Humidity', percentage: humidityPct, value: reading.humidity }),
-						_react2.default.createElement(Sensor, { label: 'Carbon Monoxide', percentage: carbonMonoxidePct, value: reading.carbonMonoxide }),
+						_react2.default.createElement(Sensor, { label: 'Carbon Monoxide', percentage: carbonMonoxidePct, value: reading.carbon_monoxide }),
 						_react2.default.createElement(Sensor, { label: 'UV', percentage: uvPct, value: reading.uv }),
 						_react2.default.createElement(Sensor, { label: 'Particles', percentage: particlesPct, value: reading.particles })
 					)
@@ -324,10 +324,13 @@ var Stats = function (_React$Component4) {
   },
   */
 		value: function componentDidMount() {
+			var _this6 = this;
+
 			this.listenerID = dispatcher.register(function (payload) {
 				switch (payload.type) {
 					case 'closestReading':
 						var reading = payload.reading;
+						_this6.setState({ reading: reading });
 
 						/* TODO: reverse geocoding
       let lat = reading.latitude;
@@ -386,7 +389,7 @@ var Sensor = function (_React$Component5) {
 	function Sensor() {
 		var _Object$getPrototypeO3;
 
-		var _temp3, _this6, _ret3;
+		var _temp3, _this7, _ret3;
 
 		_classCallCheck(this, Sensor);
 
@@ -394,8 +397,8 @@ var Sensor = function (_React$Component5) {
 			args[_key3] = arguments[_key3];
 		}
 
-		return _ret3 = (_temp3 = (_this6 = _possibleConstructorReturn(this, (_Object$getPrototypeO3 = Object.getPrototypeOf(Sensor)).call.apply(_Object$getPrototypeO3, [this].concat(args))), _this6), _this6.barLabel = function () {
-			var percentage = _this6.props.percentage;
+		return _ret3 = (_temp3 = (_this7 = _possibleConstructorReturn(this, (_Object$getPrototypeO3 = Object.getPrototypeOf(Sensor)).call.apply(_Object$getPrototypeO3, [this].concat(args))), _this7), _this7.barLabel = function () {
+			var percentage = _this7.props.percentage;
 			if (percentage < 20) {
 				return 'very-low';
 			} else if (percentage < 40) {
@@ -407,7 +410,7 @@ var Sensor = function (_React$Component5) {
 			} else {
 				return 'very-high';
 			}
-		}, _temp3), _possibleConstructorReturn(_this6, _ret3);
+		}, _temp3), _possibleConstructorReturn(_this7, _ret3);
 	}
 
 	_createClass(Sensor, [{
@@ -444,7 +447,7 @@ var Map = function (_React$Component6) {
 	function Map() {
 		var _Object$getPrototypeO4;
 
-		var _temp4, _this7, _ret4;
+		var _temp4, _this8, _ret4;
 
 		_classCallCheck(this, Map);
 
@@ -452,10 +455,10 @@ var Map = function (_React$Component6) {
 			args[_key4] = arguments[_key4];
 		}
 
-		return _ret4 = (_temp4 = (_this7 = _possibleConstructorReturn(this, (_Object$getPrototypeO4 = Object.getPrototypeOf(Map)).call.apply(_Object$getPrototypeO4, [this].concat(args))), _this7), _this7.state = {
+		return _ret4 = (_temp4 = (_this8 = _possibleConstructorReturn(this, (_Object$getPrototypeO4 = Object.getPrototypeOf(Map)).call.apply(_Object$getPrototypeO4, [this].concat(args))), _this8), _this8.state = {
 			readings: []
-		}, _this7.fetchReadings = function (latitude, longitude) {
-			if (isNaN(latitude) && isNaN(longitude)) {
+		}, _this8.fetchReadings = function (latitude, longitude) {
+			if (isNaN(latitude) == true || isNaN(longitude) == true) {
 				return;
 			}
 
@@ -465,24 +468,24 @@ var Map = function (_React$Component6) {
 				data: {
 					latitude: latitude,
 					longitude: longitude,
-					radius: 100
+					radius: RADIUS
 				},
 				dataType: 'json'
 			}).done(function (readings) {
-				if (!_this7.map) {
+				if (!_this8.map) {
 					return;
 				}
 
-				if (_this7.readingCircles) {
+				if (_this8.readingCircles) {
 					var _iteratorNormalCompletion = true;
 					var _didIteratorError = false;
 					var _iteratorError = undefined;
 
 					try {
-						for (var _iterator = _this7.readingCircles[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						for (var _iterator = _this8.readingCircles[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 							var c = _step.value;
 
-							_this7.map.removeLayer(c);
+							_this8.map.removeLayer(c);
 						}
 					} catch (err) {
 						_didIteratorError = true;
@@ -500,7 +503,7 @@ var Map = function (_React$Component6) {
 					}
 				}
 
-				_this7.readingCircles = readings.map(function (reading) {
+				_this8.readingCircles = readings.map(function (reading) {
 					var air = calculateAir(reading);
 					var color = calculateColor(air.quality);
 
@@ -509,22 +512,23 @@ var Map = function (_React$Component6) {
 						fillColor: color,
 						fillOpacity: 0.5
 					});
-					c.addTo(_this7.map);
+					c.addTo(_this8.map);
 
 					return c;
 				});
 
+				var closest = closestReading(readings, latitude, longitude);
 				dispatcher.dispatch({
 					type: 'closestReading',
-					reading: closestReading(readings, latitude, longitude)
+					reading: closest
 				});
 			});
-		}, _this7.initializeMap = function () {
+		}, _this8.initializeMap = function () {
 			navigator.geolocation.watchPosition(function (position) {
 				var latitude = position.coords.latitude;
 				var longitude = position.coords.longitude;
-				_this7.updateMap(latitude, longitude);
-				_this7.fetchReadings(latitude, longitude);
+				_this8.updateMap(latitude, longitude);
+				_this8.fetchReadings(latitude, longitude);
 			}, function (error) {
 				alert('error: ' + error);
 			}, {
@@ -532,26 +536,26 @@ var Map = function (_React$Component6) {
 				timeout: 30000,
 				maximumAge: 30000
 			});
-		}, _this7.updateMap = function (latitude, longitude) {
-			if (_this7.marker && _this7.circle) {
-				_this7.marker.setLatLng(L.latLng(latitude, longitude));
-				_this7.circle.setLatLng(L.latLng(latitude, longitude));
+		}, _this8.updateMap = function (latitude, longitude) {
+			if (_this8.marker && _this8.circle) {
+				_this8.marker.setLatLng(L.latLng(latitude, longitude));
+				_this8.circle.setLatLng(L.latLng(latitude, longitude));
 			} else {
 				var _mapboxTiles = L.mapbox.styleLayer('mapbox://styles/jackyb/cijmshu7s00mdbolxqpd5f5pz');
-				_this7.map = L.map('map').addLayer(_mapboxTiles).setView([latitude, longitude], 15);
-				_this7.circle = L.circle([latitude, longitude], RADIUS, {
+				_this8.map = L.map('map').addLayer(_mapboxTiles).setView([latitude, longitude], 15);
+				_this8.circle = L.circle([latitude, longitude], RADIUS, {
 					color: 'black',
 					fillColor: '#000',
 					fillOpacity: 0.5
 				});
-				_this7.circle.addTo(_this7.map);
-				_this7.marker = L.marker([latitude, longitude], { icon: markerIcon });
-				_this7.marker.addTo(_this7.map);
+				_this8.circle.addTo(_this8.map);
+				_this8.marker = L.marker([latitude, longitude], { icon: markerIcon });
+				_this8.marker.addTo(_this8.map);
 			}
-		}, _this7.updateStats = function (latitude, longitude) {
+		}, _this8.updateStats = function (latitude, longitude) {
 			//this.testPostReading(latitude, longitude);
 			//this.fetchReadings(latitude, longitude);
-		}, _temp4), _possibleConstructorReturn(_this7, _ret4);
+		}, _temp4), _possibleConstructorReturn(_this8, _ret4);
 	}
 
 	_createClass(Map, [{

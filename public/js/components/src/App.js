@@ -6,7 +6,7 @@ import Flux from 'flux'
 import $ from 'jquery'
 import cx from 'classnames'
 
-const RADIUS = 100,
+const RADIUS = 200,
       READING_RADIUS = 10;
 
 let dispatcher = new Flux.Dispatcher();
@@ -144,7 +144,7 @@ class Stats extends React.Component {
 		if (reading) {
 			let temperaturePct = map(reading.temperature, 25, 34, 0, 100);
 			let humidityPct = map(reading.humidity, 50, 100, 0, 100);
-			let carbonMonoxidePct = map(reading.carbonMonoxide, 0, 1024, 0, 100);
+			let carbonMonoxidePct = map(reading.carbon_monoxide, 0, 1024, 0, 100);
 			let uvPct = map(reading.uv, 0, 15, 0, 100);
 			let particlesPct = map(reading.particles, 0, 2000, 0, 100);
 			let quality = ((temperaturePct + humidityPct + carbonMonoxidePct + uvPct + particlesPct) * 0.2).toFixed();
@@ -168,7 +168,7 @@ class Stats extends React.Component {
 					<div className='sensors flex column three justify-center'>
 						<Sensor label='Temperature' percentage={temperaturePct} value={reading.temperature} />
 						<Sensor label='Humidity' percentage={humidityPct} value={reading.humidity} />
-						<Sensor label='Carbon Monoxide' percentage={carbonMonoxidePct} value={reading.carbonMonoxide} />
+						<Sensor label='Carbon Monoxide' percentage={carbonMonoxidePct} value={reading.carbon_monoxide} />
 						<Sensor label='UV' percentage={uvPct} value={reading.uv} />
 						<Sensor label='Particles' percentage={particlesPct} value={reading.particles} />
 					</div>
@@ -195,6 +195,7 @@ class Stats extends React.Component {
 			switch (payload.type) {
 			case 'closestReading':
 				let reading = payload.reading;
+				this.setState({ reading: reading });
 
 				/* TODO: reverse geocoding
 				let lat = reading.latitude;
@@ -280,7 +281,7 @@ class Map extends React.Component {
 		this.initializeMap();
 	}
 	fetchReadings = (latitude, longitude) => {
-		if (isNaN(latitude) && isNaN(longitude)) {
+		if (isNaN(latitude) == true || isNaN(longitude) == true) {
 			return;
 		}
 
@@ -290,7 +291,7 @@ class Map extends React.Component {
 			data: {
 				latitude: latitude,
 				longitude: longitude,
-				radius: 100,
+				radius: RADIUS,
 			},
 			dataType: 'json',
 		}).done((readings) => {
@@ -318,9 +319,10 @@ class Map extends React.Component {
 				return c;
 			});
 
+			let closest = closestReading(readings, latitude, longitude);
 			dispatcher.dispatch({
 				type: 'closestReading',
-				reading: closestReading(readings, latitude, longitude),
+				reading: closest,
 			});
 		});
 	};
