@@ -100,16 +100,18 @@
 		dispatcher.dispatch({ type: 'toggleSidebar', state: state });
 	}
 
-	function calculateAir(reading) {
-		var temperaturePct = map(reading.temperature, 25, 34, 0, 100).toFixed(1);
-		var humidityPct = map(reading.humidity, 50, 100, 0, 100).toFixed(1);
-		var carbonMonoxidePct = map(reading.carbonMonoxide, 0, 1024, 0, 100).toFixed(1);
-		var uvPct = map(reading.uv, 0, 15, 0, 100).toFixed(1);
-		var particlesPct = map(reading.particles, 0, 2000, 0, 100).toFixed(1);
-		return ((temperaturePct + humidityPct + carbonMonoxidePct + uvPct + particlesPct) * 0.2).toFixed();
+	function calculateQuality(reading) {
+		var temperaturePct = parseFloat(map(reading.temperature, 25, 34, 0, 100).toFixed(1));
+		var humidityPct = parseFloat(map(reading.humidity, 50, 100, 0, 100).toFixed(1));
+		var carbonMonoxidePct = parseFloat(map(reading.carbon_monoxide, 0, 1024, 0, 100).toFixed(1));
+		var uvPct = parseFloat(map(reading.uv, 0, 15, 0, 100).toFixed(1));
+		var particlesPct = parseFloat(map(reading.particles, 0, 2000, 0, 100).toFixed(1));
+		var quality = (temperaturePct + humidityPct + carbonMonoxidePct + uvPct + particlesPct) / 5;
+		return quality;
 	}
 
 	function calculateColor(quality) {
+		//console.log(quality);
 		if (quality < 20) {
 			return '#33AEDC';
 		} else if (quality < 40) {
@@ -550,8 +552,8 @@
 					}
 
 					_this8.readingCircles = readings.map(function (reading) {
-						var air = calculateAir(reading);
-						var color = calculateColor(air.quality);
+						var quality = calculateQuality(reading);
+						var color = calculateColor(quality);
 
 						var c = L.circle([reading.latitude, reading.longitude], READING_RADIUS, {
 							color: color,
