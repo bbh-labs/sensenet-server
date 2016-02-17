@@ -302,8 +302,8 @@ class Map extends React.Component {
 			}
 
 			if (this.readingCircles) {
-				for (let c of this.readingCircles) {
-					this.map.removeLayer(c);
+				for (let i in this.readingCircles) {
+					this.map.removeLayer(this.readingCircles[i]);
 				}
 			}
 

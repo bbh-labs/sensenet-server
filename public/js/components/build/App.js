@@ -479,29 +479,8 @@ var Map = function (_React$Component6) {
 				}
 
 				if (_this8.readingCircles) {
-					var _iteratorNormalCompletion = true;
-					var _didIteratorError = false;
-					var _iteratorError = undefined;
-
-					try {
-						for (var _iterator = _this8.readingCircles[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-							var c = _step.value;
-
-							_this8.map.removeLayer(c);
-						}
-					} catch (err) {
-						_didIteratorError = true;
-						_iteratorError = err;
-					} finally {
-						try {
-							if (!_iteratorNormalCompletion && _iterator.return) {
-								_iterator.return();
-							}
-						} finally {
-							if (_didIteratorError) {
-								throw _iteratorError;
-							}
-						}
+					for (var i in _this8.readingCircles) {
+						_this8.map.removeLayer(_this8.readingCircles[i]);
 					}
 				}
 
