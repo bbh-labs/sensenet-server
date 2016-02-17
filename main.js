@@ -24,7 +24,13 @@ const Reading = sequelize.define('reading', {
 	longitude:       Sequelize.FLOAT,
 });
 
-const READINGS_QUERY = 'SELECT * from (SELECT (acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(radians(r.latitude)) * cos(radians(?)) * cos(radians(r.longitude - ?))) * 6371 * 1000) computedDistance, * FROM readings r)  AS tempQuery WHERE computedDistance < ? LIMIT 10';
+const NEAR_READING_RADIUS = 10;
+
+const DISTANCE_CALC = '(acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(radians(r.latitude)) * cos(radians(?)) * cos(radians(r.longitude - ?))) * 6371 * 1000)';
+
+const GET_READINGS_QUERY = 'SELECT * FROM (SELECT ' + DISTANCE_CALC + ' computedDistance, * FROM readings r) AS tempQuery WHERE computedDistance < ? LIMIT 10';
+
+const DELETE_READINGS_QUERY = 'DELETE FROM readings WHERE (SELECT ' + DISTANCE_CALC + ' FROM readings) < ?';
 
 sequelize.sync();
 
@@ -47,9 +53,14 @@ app.get('/readings', function(req, res) {
 
 		if (!isNaN(latitude) && !isNaN(longitude)) {
 			sequelize.sync().then(function() {
-				sequelize.query(READINGS_QUERY, { replacements: [ latitude, latitude, longitude, radius ] })
-					.then(function(readings) {
-						res.send(JSON.stringify(readings[0]));
+				sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, NEAR_READING_RADIUS ] })
+					.then(function() {
+						sequelize.query(GET_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, radius ] })
+							.then(function(readings) {
+								res.send(JSON.stringify(readings[0]));
+							}).catch(function(error) {
+								console.log('error:', error);
+							});
 					}).catch(function(error) {
 						console.log('error:', error);
 					});
