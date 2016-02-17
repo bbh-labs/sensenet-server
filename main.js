@@ -31,7 +31,7 @@ const DISTANCE_CALC = '(acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(ra
 
 const GET_READINGS_QUERY = 'SELECT * FROM (SELECT ' + DISTANCE_CALC + ' computedDistance, * FROM readings r) AS tempQuery WHERE computedDistance < ? LIMIT 10';
 
-const DELETE_READINGS_QUERY = 'DELETE FROM readings r WHERE (SELECT ' + DISTANCE_CALC + ' FROM readings) < ?';
+const DELETE_READINGS_QUERY = 'DELETE FROM readings r WHERE (abs(r.latitude - ?) < 0.001 AND abs(r.longitude - ?) < 0.001) OR (SELECT ' + DISTANCE_CALC + ' FROM readings) < ?';
 
 sequelize.sync();
 
@@ -101,7 +101,7 @@ app.post('/reading', function(req, res) {
 	}
 
 	sequelize.sync().then(function() {
-		sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, latitude, longitude, NEAR_READING_RADIUS ] })
+		sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, longitude, latitude, latitude, longitude, NEAR_READING_RADIUS ] })
 			.then(function() {
 				return Reading.create({
 					device_id:       deviceID,
