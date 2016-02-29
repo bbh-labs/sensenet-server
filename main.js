@@ -25,7 +25,7 @@ const Reading = sequelize.define('reading', {
 });
 
 const READINGS_RADIUS = 100,
-      NEAR_READING_RADIUS = 10;
+      DELETE_READING_RADIUS = 3;
 
 const DISTANCE_CALC = '(acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(radians(r.latitude)) * cos(radians(?)) * cos(radians(r.longitude - ?))) * 6371 * 1000)';
 
@@ -101,7 +101,7 @@ app.post('/reading', function(req, res) {
 	}
 
 	sequelize.sync().then(function() {
-		sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, longitude, latitude, latitude, longitude, NEAR_READING_RADIUS ] })
+		sequelize.query(DELETE_READINGS_QUERY, { replacements: [ latitude, longitude, latitude, latitude, longitude, DELETE_READING_RADIUS ] })
 			.then(function() {
 				return Reading.create({
 					device_id:       deviceID,
