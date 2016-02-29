@@ -25,7 +25,7 @@ const Reading = sequelize.define('reading', {
 });
 
 const READINGS_RADIUS = 100,
-      DELETE_READING_RADIUS = 3;
+      DELETE_READING_RADIUS = 1;
 
 const DISTANCE_CALC = '(acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(radians(r.latitude)) * cos(radians(?)) * cos(radians(r.longitude - ?))) * 6371 * 1000)';
 
