@@ -29,7 +29,7 @@ const READINGS_RADIUS = 100,
 
 const DISTANCE_CALC = '(acos(sin(radians(r.latitude)) * sin(radians(?)) + cos(radians(r.latitude)) * cos(radians(?)) * cos(radians(r.longitude - ?))) * 6371 * 1000)';
 
-const GET_READINGS_QUERY = 'SELECT * FROM (SELECT ' + DISTANCE_CALC + ' computedDistance, * FROM readings r) AS tempQuery WHERE computedDistance < ? LIMIT 10';
+const GET_READINGS_QUERY = 'SELECT * FROM (SELECT ' + DISTANCE_CALC + ' computedDistance, * FROM readings r) AS tempQuery WHERE computedDistance < ? LIMIT 1000';
 
 const DELETE_READINGS_QUERY = 'DELETE FROM readings r WHERE (abs(r.latitude - ?) < 0.00001 AND abs(r.longitude - ?) < 0.00001) OR (SELECT ' + DISTANCE_CALC + ' FROM readings LIMIT 1) < ?';
 
