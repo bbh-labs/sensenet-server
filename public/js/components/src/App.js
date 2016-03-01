@@ -144,11 +144,11 @@ class Stats extends React.Component {
 	render() {
 		let reading = this.state.reading;
 		if (reading) {
-			let temperaturePct = map(reading.temperature, 25, 34, 0, 100);
+			let temperaturePct = map(reading.temperature, 25, 40, 0, 100);
 			let humidityPct = map(reading.humidity, 50, 100, 0, 100);
 			let carbonMonoxidePct = map(reading.carbon_monoxide, 0, 1024, 0, 100);
 			let uvPct = map(reading.uv, 0, 15, 0, 100);
-			let particlesPct = map(reading.particles, 0, 2000, 0, 100);
+			let particlesPct = map(reading.particles, 0, 8000, 0, 100);
 			let quality = ((temperaturePct + humidityPct + carbonMonoxidePct + uvPct + particlesPct) * 0.2).toFixed();
 			return (
 				<div className='stats flex column one'>

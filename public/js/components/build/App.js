@@ -245,11 +245,11 @@ var Stats = function (_React$Component4) {
 		value: function render() {
 			var reading = this.state.reading;
 			if (reading) {
-				var temperaturePct = map(reading.temperature, 25, 34, 0, 100);
+				var temperaturePct = map(reading.temperature, 25, 40, 0, 100);
 				var humidityPct = map(reading.humidity, 50, 100, 0, 100);
 				var carbonMonoxidePct = map(reading.carbon_monoxide, 0, 1024, 0, 100);
 				var uvPct = map(reading.uv, 0, 15, 0, 100);
-				var particlesPct = map(reading.particles, 0, 2000, 0, 100);
+				var particlesPct = map(reading.particles, 0, 8000, 0, 100);
 				var quality = ((temperaturePct + humidityPct + carbonMonoxidePct + uvPct + particlesPct) * 0.2).toFixed();
 				return _react2.default.createElement(
 					'div',
