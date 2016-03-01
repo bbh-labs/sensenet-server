@@ -7,7 +7,7 @@ import $ from 'jquery'
 import cx from 'classnames'
 
 const RADIUS = 200,
-      READING_RADIUS = 10;
+      READING_RADIUS = 1;
 
 let dispatcher = new Flux.Dispatcher();
 
