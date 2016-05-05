@@ -17,6 +17,7 @@ html, body, #root, .app {
 .navbar {
 	background: #26243c;
 	width: 100%;
+	min-height: 64px;
 }
 
 .hamburger-icon {
