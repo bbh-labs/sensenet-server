@@ -78,7 +78,8 @@
 
 	var RADIUS = 200,
 	    READING_RADIUS = 1,
-	    DEBUG = true;
+	    WATCH_POSITION = false,
+	    DEBUG = false;
 
 	var dispatcher = new _flux2.default.Dispatcher();
 
@@ -552,18 +553,33 @@
 					});
 				});
 			}, _this8.initializeMap = function () {
-				navigator.geolocation.watchPosition(function (position) {
-					var latitude = position.coords.latitude;
-					var longitude = position.coords.longitude;
-					_this8.updateMap(latitude, longitude);
-					_this8.fetchReadings(latitude, longitude);
-				}, function (error) {
-					alert('error: ' + error);
-				}, {
-					enableHighAccuracy: true,
-					timeout: 30000,
-					maximumAge: 30000
-				});
+				if (WATCH_POSITION) {
+					navigator.geolocation.watchPosition(function (position) {
+						var latitude = position.coords.latitude;
+						var longitude = position.coords.longitude;
+						_this8.updateMap(latitude, longitude);
+						_this8.fetchReadings(latitude, longitude);
+					}, function (error) {
+						alert('error: ' + error);
+					}, {
+						enableHighAccuracy: true,
+						timeout: 30000,
+						maximumAge: 30000
+					});
+				} else {
+					navigator.geolocation.getCurrentPosition(function (position) {
+						var latitude = position.coords.latitude;
+						var longitude = position.coords.longitude;
+						_this8.updateMap(latitude, longitude);
+						_this8.fetchReadings(latitude, longitude);
+					}, function (error) {
+						alert('error: ' + error);
+					}, {
+						enableHighAccuracy: true,
+						timeout: 30000,
+						maximumAge: 30000
+					});
+				}
 			}, _this8.updateMap = function (latitude, longitude) {
 				if (_this8.marker && _this8.circle) {
 					_this8.marker.setLatLng(L.latLng(latitude, longitude));
@@ -573,6 +589,13 @@
 					_this8.map = L.map('map').addLayer(_mapboxTiles).setView([latitude, longitude], 15);
 					if (DEBUG) {
 						_this8.map.on('click', _this8.postDummyData);
+					} else {
+						_this8.map.on('click', function (event) {
+							var latitude = event.latlng.lat;
+							var longitude = event.latlng.lng;
+							_this8.updateMap(latitude, longitude);
+							_this8.fetchReadings(latitude, longitude);
+						});
 					}
 
 					_this8.circle = L.circle([latitude, longitude], RADIUS, {

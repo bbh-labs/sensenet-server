@@ -8,7 +8,8 @@ import cx from 'classnames'
 
 const RADIUS = 200,
       READING_RADIUS = 1,
-      DEBUG = true;
+      WATCH_POSITION = false,
+      DEBUG = false;
 
 let dispatcher = new Flux.Dispatcher();
 
@@ -330,20 +331,37 @@ class Map extends React.Component {
 		});
 	};
 	initializeMap = () => {
-		navigator.geolocation.watchPosition(
-			(position) => {
-				let latitude = position.coords.latitude;
-				let longitude = position.coords.longitude;
-				this.updateMap(latitude, longitude);
-				this.fetchReadings(latitude, longitude);
-			}, function(error) {
-				alert('error: ' + error);
-			}, {
-				enableHighAccuracy: true,
-				timeout: 30000,
-				maximumAge: 30000,
-			}
-		);
+        if (WATCH_POSITION) {
+            navigator.geolocation.watchPosition(
+                (position) => {
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    this.updateMap(latitude, longitude);
+                    this.fetchReadings(latitude, longitude);
+                }, function(error) {
+                    alert('error: ' + error);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 30000,
+                    maximumAge: 30000,
+                }
+            );
+       } else {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    this.updateMap(latitude, longitude);
+                    this.fetchReadings(latitude, longitude);
+                }, function(error) {
+                    alert('error: ' + error);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 30000,
+                    maximumAge: 30000,
+                }
+            );
+       }
 	};
 	updateMap = (latitude, longitude) => {
 		if (this.marker && this.circle) {
@@ -356,6 +374,13 @@ class Map extends React.Component {
 				.setView([latitude, longitude], 15);
             if (DEBUG) {
                 this.map.on('click', this.postDummyData);
+            } else {
+                this.map.on('click', (event) => {
+                    let latitude = event.latlng.lat;
+                    let longitude = event.latlng.lng;
+                    this.updateMap(latitude, longitude);
+                    this.fetchReadings(latitude, longitude);
+                });
             }
 
 			this.circle = L.circle([latitude, longitude], RADIUS, {
