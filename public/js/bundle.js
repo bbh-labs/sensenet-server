@@ -607,7 +607,7 @@
 			// FOR DEBUGGING PURPOSE ONLY
 			value: function postDummyData(event) {
 				_jquery2.default.ajax({
-					url: 'http://sensenet.bbh-labs.com.sg/reading',
+					url: '/reading',
 					method: 'POST',
 					data: {
 						deviceID: '7xGJ2sT1eF',

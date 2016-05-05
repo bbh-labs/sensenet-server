@@ -376,7 +376,7 @@ class Map extends React.Component {
 	// FOR DEBUGGING PURPOSE ONLY
     postDummyData(event) {
 		$.ajax({
-			url: 'http://sensenet.bbh-labs.com.sg/reading',
+			url: '/reading',
 			method: 'POST',
 			data: {
 				deviceID: '7xGJ2sT1eF',
