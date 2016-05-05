@@ -31,7 +31,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var RADIUS = 200,
-    READING_RADIUS = 1;
+    READING_RADIUS = 1,
+    DEBUG = true;
 
 var dispatcher = new _flux2.default.Dispatcher();
 
@@ -524,6 +525,10 @@ var Map = function (_React$Component6) {
 			} else {
 				var _mapboxTiles = L.mapbox.styleLayer('mapbox://styles/jackyb/cijmshu7s00mdbolxqpd5f5pz');
 				_this8.map = L.map('map').addLayer(_mapboxTiles).setView([latitude, longitude], 15);
+				if (DEBUG) {
+					_this8.map.on('click', _this8.postDummyData);
+				}
+
 				_this8.circle = L.circle([latitude, longitude], RADIUS, {
 					color: 'black',
 					fillColor: '#000',
@@ -550,10 +555,28 @@ var Map = function (_React$Component6) {
 			this.initializeMap();
 		}
 	}, {
-		key: 'testPostReading',
+		key: 'postDummyData',
 
 
 		// FOR DEBUGGING PURPOSE ONLY
+		value: function postDummyData(event) {
+			_jquery2.default.ajax({
+				url: 'http://sensenet.bbh-labs.com.sg/reading',
+				method: 'POST',
+				data: {
+					deviceID: '7xGJ2sT1eF',
+					temperature: 31.2 + (Math.random() - 0.5) * 1,
+					humidity: 40.7 + (Math.random() - 0.5) * 1,
+					uv: 3.11 + (Math.random() - 0.5) * 1,
+					particles: 1500 + (Math.random() - 0.5) * 500,
+					carbonMonoxide: 137 + Math.random() * 100,
+					latitude: event.latlng.lat,
+					longitude: event.latlng.lng
+				}
+			});
+		}
+	}, {
+		key: 'testPostReading',
 		value: function testPostReading(latitude, longitude) {
 			_jquery2.default.ajax({
 				url: '/reading',

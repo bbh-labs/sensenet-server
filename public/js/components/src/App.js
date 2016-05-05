@@ -7,7 +7,8 @@ import $ from 'jquery'
 import cx from 'classnames'
 
 const RADIUS = 200,
-      READING_RADIUS = 1;
+      READING_RADIUS = 1,
+      DEBUG = true;
 
 let dispatcher = new Flux.Dispatcher();
 
@@ -353,6 +354,10 @@ class Map extends React.Component {
 			this.map = L.map('map')
 				.addLayer(mapboxTiles)
 				.setView([latitude, longitude], 15);
+            if (DEBUG) {
+                this.map.on('click', this.postDummyData);
+            }
+
 			this.circle = L.circle([latitude, longitude], RADIUS, {
 				color: 'black',
 				fillColor: '#000',
@@ -369,6 +374,22 @@ class Map extends React.Component {
 	};
 
 	// FOR DEBUGGING PURPOSE ONLY
+    postDummyData(event) {
+		$.ajax({
+			url: 'http://sensenet.bbh-labs.com.sg/reading',
+			method: 'POST',
+			data: {
+				deviceID: '7xGJ2sT1eF',
+				temperature: 31.2 + (Math.random() - 0.5) * 1,
+				humidity: 40.7 + (Math.random() - 0.5) * 1,
+				uv: 3.11 + (Math.random() - 0.5) * 1,
+				particles: 1500 + (Math.random() - 0.5) * 500,
+				carbonMonoxide: 137 + Math.random() * 100,
+				latitude: event.latlng.lat,
+				longitude: event.latlng.lng,
+			}
+		});
+    };
 	testPostReading(latitude, longitude) {
 		$.ajax({
 			url: '/reading',
